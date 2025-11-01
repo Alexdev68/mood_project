@@ -1,39 +1,44 @@
 import sqlite3
+from datetime import datetime
 
-DB_NAME = "emotion_app.db"
+DB_NAME = "predictions.db"
 
 def init_db():
-    """Create database and table if not exists."""
     conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS predictions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             image_path TEXT NOT NULL,
-            result TEXT NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            emotion TEXT NOT NULL,
+            timestamp TEXT NOT NULL
         )
     """)
     conn.commit()
     conn.close()
 
-def save_prediction(name, image_path, result):
-    """Save a prediction record."""
+
+def save_prediction(name, image_path, emotion):
     conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO users (name, image_path, result)
-        VALUES (?, ?, ?)
-    """, (name, image_path, result))
+    c = conn.cursor()
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    c.execute("""
+        INSERT INTO predictions (name, image_path, emotion, timestamp)
+        VALUES (?, ?, ?, ?)
+    """, (name, image_path, emotion, timestamp))
     conn.commit()
     conn.close()
 
+
 def get_all_predictions():
-    """Retrieve all records."""
     conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("SELECT name, image_path, result, timestamp FROM users ORDER BY timestamp DESC")
-    records = cursor.fetchall()
+    c = conn.cursor()
+    c.execute("""
+        SELECT name, image_path, emotion, timestamp
+        FROM predictions
+        ORDER BY id DESC
+    """)
+    records = c.fetchall()
     conn.close()
     return records

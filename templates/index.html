@@ -15,7 +15,7 @@
       background: white;
       border-radius: 10px;
       padding: 30px;
-      max-width: 400px;
+      max-width: 420px;
       margin: auto;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
@@ -42,6 +42,7 @@
       width: 100%;
       font-size: 16px;
       margin-top: 10px;
+      transition: background-color 0.3s ease;
     }
     button:hover {
       background-color: #0056b3;
@@ -65,16 +66,42 @@
     .history-link:hover {
       text-decoration: underline;
     }
+    .divider {
+      margin: 25px 0;
+      color: #888;
+      font-weight: bold;
+    }
+    video {
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+    }
+    canvas {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🧠 Mood Detector</h1>
 
-    <form method="POST" enctype="multipart/form-data">
+    <!-- Upload image form -->
+    <form method="POST" enctype="multipart/form-data" action="/upload">
       <input type="text" name="name" placeholder="Enter your name" required>
       <input type="file" name="image" accept="image/*" required>
-      <button type="submit">Analyze Mood</button>
+      <button type="submit">Analyze Uploaded Image</button>
+    </form>
+
+    <div class="divider">OR</div>
+
+    <!-- Live webcam section -->
+    <form id="liveForm" method="POST" enctype="multipart/form-data" action="/live_capture">
+      <input type="text" id="liveName" name="name" placeholder="Enter your name" required>
+      <video id="video" autoplay></video>
+      <canvas id="canvas"></canvas>
+      <button type="button" id="captureBtn">🎥 Start Camera</button>
+      <button type="button" id="snapBtn" style="display:none;">📸 Capture & Analyze</button>
     </form>
 
     {% if result %}
@@ -85,5 +112,40 @@
 
     <a href="/history" class="history-link">📜 View History</a>
   </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureBtn = document.getElementById('captureBtn');
+    const snapBtn = document.getElementById('snapBtn');
+    const liveForm = document.getElementById('liveForm');
+
+    captureBtn.addEventListener('click', async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        video.style.display = 'block';
+        captureBtn.style.display = 'none';
+        snapBtn.style.display = 'inline-block';
+      } catch (error) {
+        alert('Unable to access webcam. Please check permissions.');
+      }
+    });
+
+    snapBtn.addEventListener('click', () => {
+      const context = canvas.getContext('2d');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => {
+        const formData = new FormData(liveForm);
+        formData.append('image', blob, 'live_capture.jpg');
+        fetch('/live_capture', {
+          method: 'POST',
+          body: formData
+        }).then(() => window.location.reload());
+      }, 'image/jpeg');
+    });
+  </script>
 </body>
 </html>

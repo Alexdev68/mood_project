@@ -2,87 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Mood Detection History</title>
+  <title>Detection History</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f6f8;
       margin: 0;
-      padding: 20px;
+      padding: 30px;
       text-align: center;
     }
+
     h1 {
       color: #333;
+      margin-bottom: 30px;
     }
-    table {
-      width: 90%;
-      margin: 20px auto;
-      border-collapse: collapse;
-      background-color: white;
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
       border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
     }
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
+
+    .card:hover {
+      transform: scale(1.03);
     }
-    th {
-      background-color: #007bff;
-      color: white;
-      text-transform: uppercase;
-    }
-    tr:hover {
-      background-color: #f1f1f1;
-    }
+
     img {
-      width: 70px;
-      height: 70px;
-      object-fit: cover;
+      max-width: 100%;
       border-radius: 8px;
+      height: 200px;
+      object-fit: cover;
     }
-    a {
-      text-decoration: none;
+
+    .info {
+      margin-top: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .info strong {
       color: #007bff;
     }
-    a:hover {
-      text-decoration: underline;
+
+    a.back {
+      display: inline-block;
+      margin-top: 25px;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      text-decoration: none;
     }
-    .back {
-      margin-top: 20px;
+
+    a.back:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <h1>📜 Mood Detection History</h1>
+  <h1>🧾 Detection History</h1>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Image</th>
-        <th>Detected Emotion</th>
-        <th>Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for record in records %}
-      <tr>
-        <td>{{ record[0] }}</td>
-        <td>{{ record[1] }}</td>
-        <td>
-          <img src="{{ url_for('static', filename='uploads/' + record[2]) }}" alt="User image">
-        </td>
-        <td>{{ record[3] }}</td>
-        <td>{{ record[4] }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  <div class="back">
-    <a href="/">⬅ Back to Mood Detector</a>
+  <div class="container">
+    {% for record in records %}
+      <div class="card">
+        <img src="{{ url_for('static', filename='uploads/' ~ record[2]) }}" alt="User Image">
+        <div class="info">
+          <p><strong>Name:</strong> {{ record[1] }}</p>
+          <p><strong>Emotion:</strong> {{ record[3] }}</p>
+          {% if record|length > 4 %}
+          <p><strong>Timestamp:</strong> {{ record[4] }}</p>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <p>No history available yet. Try uploading or using live detection.</p>
+    {% endfor %}
   </div>
+
+  <a class="back" href="/">← Back to Home</a>
 </body>
 </html>
