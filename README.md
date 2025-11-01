@@ -7,11 +7,11 @@ The project includes a Flask web interface for image upload, real-time emotion p
 
 ## 🚀 Features
 
-- 📸 Upload an image to detect emotions  
+- 📸 Upload an image/live capture to detect emotions  
 - 🧠 CNN model (trained on FER2013 dataset or custom dataset)  
 - 💾 Automatically stores:
   - User name  
-  - Uploaded image  
+  - Uploaded/live captured image 
   - Model prediction (detected mood)  
 - 🌐 Works both online and offline  
 - 📊 History page showing previous results  
