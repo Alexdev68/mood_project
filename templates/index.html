@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mood Detector</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      text-align: center;
+      margin: 0;
+      padding: 40px;
+    }
+    .container {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    input[type="text"],
+    input[type="file"] {
+      margin: 10px 0;
+      padding: 8px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      margin-top: 25px;
+      font-size: 18px;
+      color: #444;
+    }
+    img {
+      margin-top: 15px;
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    .history-link {
+      display: block;
+      margin-top: 20px;
+      color: #007bff;
+      text-decoration: none;
+    }
+    .history-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mood Detector</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+      <input type="text" name="name" placeholder="Enter your name" required>
+      <input type="file" name="image" accept="image/*" required>
+      <button type="submit">Analyze Mood</button>
+    </form>
+
+    {% if result %}
+      <div class="result">
+        <strong>Detected Emotion:</strong> {{ result }}
+      </div>
+    {% endif %}
+
+    <a href="/history" class="history-link">📜 View History</a>
+  </div>
+</body>
+</html>
