@@ -8,7 +8,7 @@ from database import init_db, save_prediction, get_all_predictions
 app = Flask(__name__)
 
 # Load trained CNN model
-model = load_model("cnn_emotion_model.h5")
+model = load_model("face_emotion_model.h5")
 
 # Emotion labels (adjust if your model uses a different order)
 emotion_labels = ["angry", "disgust", "fear", "happy", "neutral", "sad", "surprise"]
