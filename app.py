@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, Response
+from flask import Flask, render_template, request, Response, redirect, url_for
+import sqlite3
 import cv2
 import numpy as np
 import os
@@ -13,14 +14,14 @@ model = load_model("face_emotion_model.h5")
 # Emotion labels (adjust if your model uses a different order)
 emotion_labels = ["angry", "disgust", "fear", "happy", "neutral", "sad", "surprise"]
 
-# Haar Cascade
+# Haar Cascade for face detection
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 # Upload directory
 UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Initialize DB
+# Initialize database
 init_db()
 
 
@@ -30,7 +31,7 @@ def index():
     result = None
     if request.method == "POST":
         name = request.form.get("name")
-        image = request.files["image"]
+        image = request.files.get("image")
 
         if not name or not image:
             result = "Please provide both name and image."
@@ -88,7 +89,7 @@ def generate_frames(user_name="Anonymous"):
             preds = model.predict(face_roi)
             emotion = emotion_labels[np.argmax(preds)]
 
-            # Draw results on frame
+            # Draw emotion label on the frame
             cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
             cv2.putText(frame, emotion, (x, y-10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 2)
@@ -102,6 +103,7 @@ def generate_frames(user_name="Anonymous"):
 
         frame_count += 1
 
+        # Encode frame for streaming
         _, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
@@ -123,6 +125,24 @@ def history():
     """View saved predictions."""
     records = get_all_predictions()
     return render_template("history.html", records=records)
+
+
+@app.route('/clear_history', methods=['POST'])
+def clear_history():
+    """Delete all records and optionally uploaded images."""
+    conn = sqlite3.connect('predictions.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM predictions")
+    conn.commit()
+    conn.close()
+
+    # Optional: clear uploaded images
+    for filename in os.listdir(UPLOAD_FOLDER):
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+    return redirect(url_for('history'))
 
 
 if __name__ == "__main__":

@@ -2,93 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Detection History</title>
+  <title>Emotion Detection History</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f6f8;
+      text-align: center;
       margin: 0;
       padding: 30px;
-      text-align: center;
     }
-
-    h1 {
-      color: #333;
-      margin-bottom: 30px;
-    }
-
     .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 20px;
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    .card {
       background: white;
       border-radius: 10px;
-      padding: 15px;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s ease;
     }
-
-    .card:hover {
-      transform: scale(1.03);
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
     }
-
+    .record {
+      border-bottom: 1px solid #ccc;
+      padding: 15px 0;
+    }
     img {
       max-width: 100%;
       border-radius: 8px;
-      height: 200px;
-      object-fit: cover;
-    }
-
-    .info {
       margin-top: 10px;
-      text-align: left;
-      font-size: 14px;
     }
-
-    .info strong {
-      color: #007bff;
-    }
-
-    a.back {
-      display: inline-block;
+    .back-link {
+      display: block;
       margin-top: 25px;
-      background-color: #007bff;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 6px;
+      color: #007bff;
       text-decoration: none;
     }
-
-    a.back:hover {
-      background-color: #0056b3;
+    .back-link:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>🧾 Detection History</h1>
-
   <div class="container">
-    {% for record in records %}
-      <div class="card">
-        <img src="{{ url_for('static', filename='uploads/' ~ record[2]) }}" alt="User Image">
-        <div class="info">
-          <p><strong>Name:</strong> {{ record[1] }}</p>
-          <p><strong>Emotion:</strong> {{ record[3] }}</p>
-          {% if record|length > 4 %}
-          <p><strong>Timestamp:</strong> {{ record[4] }}</p>
-          {% endif %}
+    <h1>📜 Mood Detection History</h1>
+    {% if records %}
+      {% for record in records %}
+        <div class="record">
+          <img src="{{ url_for('static', filename='uploads/' + record[1]) }}" alt="User Image" width="200">
+          <p><strong>Name:</strong> {{ record[0] }}</p>
+          <p><strong>Emotion:</strong> {{ record[2] }}</p>
+          <p><strong>Detected On:</strong> {{ record[3] }}</p>
         </div>
-      </div>
+      {% endfor %}
     {% else %}
-      <p>No history available yet. Try uploading or using live detection.</p>
-    {% endfor %}
-  </div>
+      <p>No history found yet.</p>
+    {% endif %}
+    <form action="/clear_history" method="post" style="margin-top: 15px;">
+     <button type="submit" style="background:#dc3545;color:white;padding:8px 15px;border:none;border-radius:5px;cursor:pointer;">
+    🗑️ Clear History
+  </button>
+</form>
 
-  <a class="back" href="/">← Back to Home</a>
+    <a href="/" class="back-link">⬅ Back to Home</a>
+  </div>
 </body>
 </html>
