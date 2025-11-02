@@ -5,8 +5,13 @@ import numpy as np
 import os
 from tensorflow.keras.models import load_model
 from database import init_db, save_prediction, get_all_predictions
+import tensorflow as tf
 
 app = Flask(__name__)
+
+tf.config.set_visible_devices([], 'GPU')
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
 
 # Load trained CNN model
 model = load_model("face_emotion_model.h5")
