@@ -40,8 +40,6 @@ def predict_emotion(face):
         preds = interpreter.get_tensor(output_details[0]['index'])
 
         conf = np.max(preds)
-        if conf < 0.35:  # slightly higher threshold to reduce false predictions
-            return "Uncertain"
         return emotion_labels[np.argmax(preds)]
     except Exception as e:
         print("Prediction error:", e)
